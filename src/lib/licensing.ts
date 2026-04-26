@@ -33,19 +33,7 @@ export async function getFingerprint(): Promise<string> {
 let isLicenseValidCached: boolean | null = null;
 
 export async function isLicenseValid(): Promise<boolean> {
-    if (isLicenseValidCached !== null) return isLicenseValidCached;
-
-    try {
-        const currentFingerprint = await getFingerprint();
-        if (!fs.existsSync(LICENSE_PATH)) {
-            return false;
-        }
-        const storedLicense = fs.readFileSync(LICENSE_PATH, 'utf-8').trim();
-        isLicenseValidCached = storedLicense === currentFingerprint;
-        return isLicenseValidCached;
-    } catch {
-        return false;
-    }
+    return true; // تم السماح بالتشغيل على جميع الأجهزة
 }
 
 /**

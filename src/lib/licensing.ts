@@ -32,24 +32,40 @@ export async function getFingerprint(): Promise<string> {
 
 let isLicenseValidCached: boolean | null = null;
 
-/**
- * دالة للاستخدام في الـ Middleware أو الـ Layouts للتحقق السريع
- */
 export async function isLicenseValid(): Promise<boolean> {
     if (isLicenseValidCached !== null) return isLicenseValidCached;
 
     try {
         const currentFingerprint = await getFingerprint();
         if (!fs.existsSync(LICENSE_PATH)) {
-            isLicenseValidCached = false;
             return false;
         }
         const storedLicense = fs.readFileSync(LICENSE_PATH, 'utf-8').trim();
         isLicenseValidCached = storedLicense === currentFingerprint;
         return isLicenseValidCached;
     } catch {
-        isLicenseValidCached = false;
         return false;
+    }
+}
+
+/**
+ * دالة لتفعيل الجهاز باستخدام كود خاص
+ */
+export async function activateHardware(code: string): Promise<{ success: boolean; message: string }> {
+    const MASTER_CODE = process.env.MASTER_ACTIVATION_CODE || "NEXUS-2024-ADMIN";
+
+    if (code !== MASTER_CODE) {
+        return { success: false, message: "كود التفعيل غير صحيح" };
+    }
+
+    try {
+        const currentFingerprint = await getFingerprint();
+        fs.writeFileSync(LICENSE_PATH, currentFingerprint);
+        isLicenseValidCached = true;
+        return { success: true, message: "تم تفعيل الجهاز بنجاح" };
+    } catch (error) {
+        console.error("Activation error:", error);
+        return { success: false, message: "حدث خطأ أثناء حفظ التفعيل" };
     }
 }
 

@@ -1,0 +1,18 @@
+@echo off
+:: الانتقال لمجلد المشروع لضمان عمل الأوامر
+cd /d "%~dp0"
+
+:: إغلاق أي نسخة قديمة تعمل في الخلفية
+taskkill /f /im node.exe >nul 2>&1
+
+:: تشغيل المحرك (npm run start) بشكل مخفي تماماً
+start /b "" cmd /c "npm run start > nul 2>&1"
+
+:: الانتظار لضمان إقلاع السيرفر
+echo الجاري تشغيل نظام العيادة، يرجى الانتظار ثواني...
+timeout /t 6 /nobreak > nul
+
+:: فتح النظام في متصفح كروم كأنه تطبيق مستقل
+start chrome --app=http://localhost:3000
+
+exit
